@@ -1,33 +1,34 @@
-import { useEffect } from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import Page from '../components/Page'
-import { addCount } from '../store/count/action'
-import { wrapper } from '../store/store'
-import { serverRenderClock, startClock } from '../store/tick/action'
+import { useDispatch, useSelector } from "react-redux";
+import LoginForm from "../components/LoginForm";
+import api from "../api";
+import { logout, setAuth, setLoggedIn } from "../store/actions/auth";
+import { wrapper } from "../store/store";
 
 const Index = (props) => {
-  useEffect(() => {
-    const timer = props.startClock()
+  const auth = useSelector((state) => state.authReducer.auth);
+  const loggedIn = useSelector((state) => state.authReducer.loggedIn);
+  const dispatch = useDispatch();
 
-    return () => {
-      clearInterval(timer)
-    }
-  }, [props])
-
-  return <Page title="Index Page" linkTo="/other" />
-}
-
-export const getStaticProps = wrapper.getStaticProps(async ({ store }) => {
-  store.dispatch(serverRenderClock(true))
-  store.dispatch(addCount())
-})
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    addCount: bindActionCreators(addCount, dispatch),
-    startClock: bindActionCreators(startClock, dispatch),
-  }
-}
-
-export default connect(null, mapDispatchToProps)(Index)
+  return (
+    <>
+      {loggedIn && (
+        <div>
+          <h2>{auth.email}</h2>
+          <button
+            onClick={() => {
+              logout(dispatch);
+            }}
+          >
+            Logout
+          </button>
+        </div>
+      )}
+      {!loggedIn && (
+        <h2>
+          <LoginForm />
+        </h2>
+      )}
+    </>
+  );
+};
+export default Index;
