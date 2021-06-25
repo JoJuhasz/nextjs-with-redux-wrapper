@@ -5,4 +5,4 @@ const Places = (props) => {
   return <div>Places</div>;
 };
 
-export default places;
+export default Places;
